@@ -16,7 +16,7 @@ The [LibreOffice Online](https://github.com/LibreOffice/online) repository is me
 * libpagemaker (included)
 * libwps (included)
 * poco (included)
-* libreoffice (included)
+* libreoffice (included - .spec only, sources can be downloaded from [LibreOffice](https://github.com/LibreOffice))
 
 ## Changes from original repo
 * Werror for shadow has been disabled, breaks the build
