@@ -1,0 +1,13 @@
+diff -up poco-1.6.1-all/Data/SQLite/src/Utility.cpp.no_busy_snapshot poco-1.6.1-all/Data/SQLite/src/Utility.cpp
+--- poco-1.6.1-all/Data/SQLite/src/Utility.cpp.no_busy_snapshot	2015-08-04 01:21:03.000000000 -0400
++++ poco-1.6.1-all/Data/SQLite/src/Utility.cpp	2016-02-05 21:37:56.006325855 -0500
+@@ -167,7 +167,9 @@ void Utility::throwException(int rc, con
+ 		throw ExecutionAbortedException(std::string("Callback routine requested an abort"), addErrMsg);
+ 	case SQLITE_BUSY:
+ 	case SQLITE_BUSY_RECOVERY:
++#if defined(SQLITE_BUSY_SNAPSHOT)
+ 	case SQLITE_BUSY_SNAPSHOT:
++#endif
+ 		throw DBLockedException(std::string("The database file is locked"), addErrMsg);
+ 	case SQLITE_LOCKED:
+ 		throw TableLockedException(std::string("A table in the database is locked"), addErrMsg);

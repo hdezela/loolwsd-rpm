@@ -1,0 +1,88 @@
+diff -up poco-1.6.1-all/MongoDB/testsuite/src/MongoDBTest.cpp.disable_tests poco-1.6.1-all/MongoDB/testsuite/src/MongoDBTest.cpp
+--- poco-1.6.1-all/MongoDB/testsuite/src/MongoDBTest.cpp.disable_tests	2015-08-04 01:21:05.000000000 -0400
++++ poco-1.6.1-all/MongoDB/testsuite/src/MongoDBTest.cpp	2016-02-02 20:23:12.350816303 -0500
+@@ -418,7 +418,7 @@ CppUnit::Test* MongoDBTest::suite()
+ 	CppUnit_addTest(pSuite, MongoDBTest, testCountCommand);
+ 	CppUnit_addTest(pSuite, MongoDBTest, testDBCountCommand);
+ 	CppUnit_addTest(pSuite, MongoDBTest, testDBCount2Command);
+-	CppUnit_addTest(pSuite, MongoDBTest, testConnectionPool);
++	//CppUnit_addTest(pSuite, MongoDBTest, testConnectionPool);
+ 	CppUnit_addTest(pSuite, MongoDBTest, testDeleteRequest);
+ 	CppUnit_addTest(pSuite, MongoDBTest, testBuildInfo);
+ 	CppUnit_addTest(pSuite, MongoDBTest, testCursorRequest);
+diff -up poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSClientSessionTest.cpp.disable_tests poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSClientSessionTest.cpp
+--- poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSClientSessionTest.cpp.disable_tests	2015-08-04 01:21:02.000000000 -0400
++++ poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSClientSessionTest.cpp	2016-02-02 19:57:45.745880240 -0500
+@@ -472,8 +472,8 @@ CppUnit::Test* HTTPSClientSessionTest::s
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testPostLargeChunked);
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testPostLargeChunkedKeepAlive);
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testKeepAlive);
+-	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testInterop);
+-	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testProxy);
++	//CppUnit_addTest(pSuite, HTTPSClientSessionTest, testInterop);
++	//CppUnit_addTest(pSuite, HTTPSClientSessionTest, testProxy);
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testCachedSession);
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testUnknownContentLength);
+ 	CppUnit_addTest(pSuite, HTTPSClientSessionTest, testServerAbort);
+diff -up poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSStreamFactoryTest.cpp.disable_tests poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSStreamFactoryTest.cpp
+--- poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSStreamFactoryTest.cpp.disable_tests	2015-08-04 01:21:02.000000000 -0400
++++ poco-1.6.1-all/NetSSL_OpenSSL/testsuite/src/HTTPSStreamFactoryTest.cpp	2016-02-02 19:59:26.298930557 -0500
+@@ -132,7 +132,7 @@ CppUnit::Test* HTTPSStreamFactoryTest::s
+ 	CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testNoRedirect);
+ 	CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testEmptyPath);
+ 	CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testRedirect);
+-	CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testProxy);
++	//CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testProxy);
+ 	CppUnit_addTest(pSuite, HTTPSStreamFactoryTest, testError);
+ 
+ 	return pSuite;
+diff -up poco-1.6.1-all/Net/testsuite/src/NetCoreTestSuite.cpp.disable_tests poco-1.6.1-all/Net/testsuite/src/NetCoreTestSuite.cpp
+--- poco-1.6.1-all/Net/testsuite/src/NetCoreTestSuite.cpp.disable_tests	2015-08-04 01:21:00.000000000 -0400
++++ poco-1.6.1-all/Net/testsuite/src/NetCoreTestSuite.cpp	2016-02-01 23:59:00.722346381 -0500
+@@ -22,8 +22,8 @@ CppUnit::Test* NetCoreTestSuite::suite()
+ 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("NetCoreTestSuite");
+ 
+ 	pSuite->addTest(IPAddressTest::suite());
+-	pSuite->addTest(SocketAddressTest::suite());
+-	pSuite->addTest(DNSTest::suite());
++	//pSuite->addTest(SocketAddressTest::suite());
++	//pSuite->addTest(DNSTest::suite());
+ #ifdef POCO_NET_HAS_INTERFACE
+ 	pSuite->addTest(NetworkInterfaceTest::suite());
+ #endif // POCO_NET_HAS_INTERFACE
+diff -up poco-1.6.1-all/Net/testsuite/src/NetTestSuite.cpp.disable_tests poco-1.6.1-all/Net/testsuite/src/NetTestSuite.cpp
+--- poco-1.6.1-all/Net/testsuite/src/NetTestSuite.cpp.disable_tests	2015-08-04 01:21:00.000000000 -0400
++++ poco-1.6.1-all/Net/testsuite/src/NetTestSuite.cpp	2016-02-02 00:04:57.656019288 -0500
+@@ -44,11 +44,11 @@ CppUnit::Test* NetTestSuite::suite()
+ 	pSuite->addTest(ReactorTestSuite::suite());
+ 	pSuite->addTest(FTPClientTestSuite::suite());
+ 	pSuite->addTest(MailTestSuite::suite());
+-	pSuite->addTest(ICMPClientTestSuite::suite());
+-	pSuite->addTest(NTPClientTestSuite::suite());
++	//pSuite->addTest(ICMPClientTestSuite::suite());
++	//pSuite->addTest(NTPClientTestSuite::suite());
+ 	pSuite->addTest(WebSocketTestSuite::suite());
+ 	pSuite->addTest(OAuthTestSuite::suite());
+-	pSuite->addTest(SyslogTest::suite());
++	//pSuite->addTest(SyslogTest::suite());
+ 
+ 	return pSuite;
+ }
+diff -up poco-1.6.1-all/Net/testsuite/src/SocketsTestSuite.cpp.disable_tests poco-1.6.1-all/Net/testsuite/src/SocketsTestSuite.cpp
+--- poco-1.6.1-all/Net/testsuite/src/SocketsTestSuite.cpp.disable_tests	2015-08-04 01:21:00.000000000 -0400
++++ poco-1.6.1-all/Net/testsuite/src/SocketsTestSuite.cpp	2016-02-02 00:02:20.056397561 -0500
+@@ -25,11 +25,11 @@ CppUnit::Test* SocketsTestSuite::suite()
+ 
+ 	pSuite->addTest(SocketTest::suite());
+ 	pSuite->addTest(SocketStreamTest::suite());
+-	pSuite->addTest(DatagramSocketTest::suite());
++	//pSuite->addTest(DatagramSocketTest::suite());
+ 	pSuite->addTest(DialogSocketTest::suite());
+-	pSuite->addTest(RawSocketTest::suite());
++	//pSuite->addTest(RawSocketTest::suite());
+ #ifdef POCO_NET_HAS_INTERFACE
+-	pSuite->addTest(MulticastSocketTest::suite());
++	//pSuite->addTest(MulticastSocketTest::suite());
+ #endif
+ 	return pSuite;
+ }

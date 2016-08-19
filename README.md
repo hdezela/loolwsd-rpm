@@ -15,7 +15,7 @@ The [LibreOffice Online](https://github.com/LibreOffice/online) repository is me
 * ~~libe-book~~
 * ~~libpagemaker~~
 * ~~libwps~~
-* ~~poco~~
+* poco
 * libreoffice (included - list only, binaries can be downloaded from [LibreOffice](http://download.documentfoundation.org/libreoffice/stable/5.2.0/rpm/x86_64/))
 
 ## Changes from original repo
