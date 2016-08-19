@@ -9,7 +9,7 @@
 %global            office_pkgname libreoffice
 %global            office_version 5.2
 %global            office_fulname %{office_pkgname}%{office_version}
-%global            office_instdir %{_libdir}/%{office_pkgname}
+%global            office_instdir /opt/%{office_fulname}
 Name:              loolwsd
 Version:           1.9.0
 Release:           1000.HDZ
@@ -18,11 +18,9 @@ Summary:           LibreOffice On-Line WebSocket Daemon
 License:           MPL
 Url:               https://github.com/LibreOffice/online
 # Sources manually packed
-Source0:           online-master.tar.gz
+Source0:           master.tar.gz
 # Files missing from the loleaflet dist that are nonetheless required
 Source1:           loleaflet-missing.tar.xz
-# Shadow warnings as errors breaks the build
-Patch0:            disable-shadow-errors.patch
 # There's a lot of extraneous stuff that triggers incorrect autoreq/autoprov
 AutoReqProv:       no
 # Npm requires tested manually since most aren't installed through RPM/YUM/DNF
@@ -30,30 +28,14 @@ BuildRequires:     libcap-devel
 BuildRequires:     libpng-devel
 BuildRequires:     poco-devel >= 1.7.1
 BuildRequires:     libpcap
-BuildRequires:     nodejs >= 4.4.7
+BuildRequires:     nodejs
 BuildRequires:     nodejs-packaging
 BuildRequires:     python
 BuildRequires:     python-polib
 # It needs to be able to find libreoffice for compiling
 BuildRequires:     %{office_fulname}
-BuildRequires:     %{office_fulname}-ure
-BuildRequires:     %{office_pkgname}-core
-BuildRequires:     %{office_fulname}-writer
-BuildRequires:     %{office_fulname}-impress
-BuildRequires:     %{office_pkgname}-graphicfilter
-BuildRequires:     %{office_fulname}-calc
-BuildRequires:     %{office_fulname}-draw
-BuildRequires:     %{office_fulname}-base
 # Tied to LibreOffice version
 Requires:          %{office_fulname}
-Requires:          %{office_fulname}-ure
-Requires:          %{office_pkgname}-core
-Requires:          %{office_fulname}-writer
-Requires:          %{office_fulname}-impress
-Requires:          %{office_pkgname}-graphicfilter
-Requires:          %{office_fulname}-calc
-Requires:          %{office_fulname}-draw
-Requires:          %{office_fulname}-base
 Requires:          systemd
 Requires:          expat keyutils-libs
 Requires:          krb5-libs
@@ -109,69 +91,20 @@ else
 		exit -1
 	fi
 fi
-# Test if browserify is installed
-if test -d /usr/lib/node_modules/browserify
-then
-	echo "Found npm(browserify), continuing"
-else
-	if test -d /usr/lib64/node_modules/browserify
-	then
-		echo "Found npm(browserify), continuing"
-	else
-		echo "npm(browserify) is required for build"
-		exit -1
-	fi
-fi
-# Test if shrinkpack is installed
-if test -d /usr/lib/node_modules/shrinkpack
-then
-	echo "Found npm(shrinkpack), continuing"
-else
-	if test -d /usr/lib64/node_modules/shrinkpack
-	then
-		echo "Found npm(shrinkpack), continuing"
-	else
-		echo "npm(shrinkpack) is required for build"
-		exit -1
-	fi
-fi
-# Test if shrinkwrap is installed
-if test -d /usr/lib/node_modules/shrinkwrap
-then
-	echo "Found npm(shrinkwrap), continuing"
-else
-	if test -d /usr/lib64/node_modules/shrinkwrap
-	then
-		echo "Found npm(shrinkwrap), continuing"
-	else
-		echo "npm(shrinkwrap) is required for build"
-		exit -1
-	fi
-fi
-
-# Due to the way npm behaves inside rpmbuild, we need connectivity (Or maybe I just can't get it to work the way it should)
-echo "Test for connectivity"
-wget -q --tries=3 --timeout=20 --spider http://google.com > /dev/null
-if [[ $? -eq 0 ]]; then
-	echo "Online, continuing"
-else
-	echo "Connectivity is required for build"
-	exit -1
-fi
 
 # Now we can really begin
 %setup -q -n online-master
-%patch0 -p1 -b .shadow
 
-cd loolwsd
+pushd loolwsd
 %{__libtoolize}
 %{__aclocal} -I m4
 autoreconf -vif
 %{__automake} --add-missing
 autoheader
+popd
 
 %build
-cd loolwsd
+pushd loolwsd
 %configure \
   --with-lokit-path=bundled/include \
   --with-lo-path=%{office_instdir} \
@@ -183,25 +116,21 @@ cd loolwsd
 
 # Build loolwsd
 env BUILDING_FROM_RPMBUILD=yes make %{?_smp_mflags}
+popd
 
 # Build loleaflet
-cd ../loleaflet
-npm update
-npm shrinkwrap --dev
-shrinkpack
-make debug
-util/po2json.py --quiet po/*.po
-mv po/*.json dist/l10n
-util/po2json.py --quiet po/styles/*.po
-mkdir -p dist/l10n/styles/
-mv po/styles/*.json dist/l10n/styles/
+pushd loleaflet
+make dist
+popd
 
 %install
-cd loolwsd
+pushd loolwsd
 env BUILDING_FROM_RPMBUILD=yes make install DESTDIR=%{buildroot}
-
 %__install -D -m 444 loolwsd.service %{buildroot}%{_unitdir}/loolwsd.service
-install -D -m 644 sysconfig.loolwsd %{buildroot}/etc/sysconfig/loolwsd
+%__install -D -m 644 sysconfig.loolwsd %{buildroot}/etc/sysconfig/loolwsd
+popd
+
+# Setting up cron
 %{__mkdir_p} %{buildroot}/etc/cron.d
 echo "#Remove old tiles once every 10 days at midnight" > %{buildroot}/etc/cron.d/loolwsd.cron
 echo "0 0 */1 * * find /var/cache/loolwsd -name \"*.png\" -a -atime +10 -exec rm {} \;" >> %{buildroot}/etc/cron.d/loolwsd.cron
@@ -215,11 +144,12 @@ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/loolstress
 chrpath --delete $RPM_BUILD_ROOT%{_bindir}/looltool
 
 # Installing loleaflet
-%{__mkdir_p} %{buildroot}%{_datadir}/%{name}/file_root/loleaflet
+%{__mkdir_p} %{buildroot}%{_datadir}/%{name}/file_root
 %{__mv} %{buildroot}/%{_datadir}/%{name}/discovery.xml %{buildroot}%{_datadir}/%{name}/file_root/discovery.xml
 %{__mv} %{buildroot}/%{_datadir}/%{name}/robots.txt %{buildroot}%{_datadir}/%{name}/file_root/robots.txt
-%{__mv} %{_builddir}/online-master/loleaflet/dist %{buildroot}%{_datadir}/%{name}/file_root/loleaflet
-
+tar xf loleaflet/loleaflet-%{version}.tar.gz -C %{buildroot}%{_datadir}/%{name}/file_root
+%{__mv} %{buildroot}%{_datadir}/%{name}/file_root/loleaflet-%{version} %{buildroot}%{_datadir}/%{name}/file_root/loleaflet
+ls
 # Repairing loleaflet (files missing from dist that are required)
 tar -xf %{SOURCE1} -C %{buildroot}%{_datadir}/%{name}/file_root/loleaflet/dist
 
@@ -237,11 +167,10 @@ cp %{buildroot}/etc/%{name}/loolwsd.xml %{buildroot}/etc/%{name}/loolwsd.xml.dis
 %{__sed} -i 's|</lo_template_path>|%{office_instdir}</lo_template_path>|g' %{buildroot}/etc/%{name}/loolwsd.xml
 %{__sed} -i 's|</child_root_path>|%{_datadir}/%{name}/jails</child_root_path>|g' %{buildroot}/etc/%{name}/loolwsd.xml
 %{__sed} -i 's|</file_server_root_path>|%{_datadir}/%{name}/file_root</file_server_root_path>|g' %{buildroot}/etc/%{name}/loolwsd.xml
+%{__sed} -i 's|<filesystem allow="false" />|<filesystem allow="true" />|g' %{buildroot}/etc/%{name}/loolwsd.xml
 %{__sed} -i 's|</username>|admin</username>|g' %{buildroot}/etc/%{name}/loolwsd.xml
 %{__sed} -i 's|</password>|admin</password>|g' %{buildroot}/etc/%{name}/loolwsd.xml
-
 %{__sed} -i 's|/usr/local/lib /opt/poco/lib|/usr/lib64|g' %{buildroot}/usr/bin/loolwsd-systemplate-setup
-
 %{__sed} -i 's|ExecStart=/usr/bin/loolwsd --version --o:sys_template_path=/opt/lool/systemplate --o:lo_template_path=/opt/collaboraoffice5.1 --o:child_root_path=/opt/lool/child-roots --o:file_server_root_path=/usr/share/loolwsd|ExecStart=/usr/bin/loolwsd|g' %{buildroot}/usr/lib/systemd/system/loolwsd.service
 
 %check
@@ -272,19 +201,19 @@ rm -rf %{_datadir}/%{name}/systemplate%{_libdir}/%{office_pkgname}
 ----------------------------------------------------------------------
 
 SSL Key files locations:
-     \etc\loolwsd\key.pem
-	\etc\loolwsd\ca-chain.cert.pem
-	\etc\loolwsd\cert.pem
+	/etc/loolwsd/key.pem
+	/etc/loolwsd/ca-chain.cert.pem
+	/etc/loolwsd/cert.pem
 
 Some paths have been changed, take a look at:
-     \etc\loolwsd\loolwsd.xml
+	/etc/loolwsd/loolwsd.xml
 
 Default admin credentials:
-     user admin
+	user admin
 	pass admin
 
 Debug level is set to trace, find "level" in:
-	\etc\loolwsd\loolwsd.xml
+	/etc/loolwsd/loolwsd.xml
 
 ----------------------------------------------------------------------
 BANNER

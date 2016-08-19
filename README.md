@@ -11,21 +11,21 @@ The [LibreOffice Online](https://github.com/LibreOffice/online) repository is me
 
 ## Requirements
 * CentOS (tested on 7) / Fedora (tested on 23)
-* libcmis (included)
-* libe-book (included)
-* libpagemaker (included)
-* libwps (included)
-* poco (included)
-* libreoffice (included - .spec only, sources can be downloaded from [LibreOffice](https://github.com/LibreOffice))
+* ~~libcmis~~
+* ~~libe-book~~
+* ~~libpagemaker~~
+* ~~libwps~~
+* ~~poco~~
+* libreoffice (included - list only, binaries can be downloaded from [LibreOffice](http://download.documentfoundation.org/libreoffice/stable/5.2.0/rpm/x86_64/))
 
 ## Changes from original repo
-* Werror for shadow has been disabled, breaks the build
-* When building loleaflet, npm goes online, updates and rebuilds the shrinkpack
-* loleaflet move to /usr/share/loolwsd/file_root
+* ~~Werror for shadow has been disabled, breaks the build~~
+* ~~When building loleaflet, npm goes online, updates and rebuilds the shrinkpack~~
+* loleaflet moved to /usr/share/loolwsd/file_root
 * jails moved to /usr/share/loolwsd/jails
 * systemplate moved to /usr/share/loolwsd/systemplate
 * all options in unit file removed (forces read from /etc/loolwsd/loolwsd.xml)
-* Pointers changed for LibreOffice 5.2 at /usr/lib64
+* Pointers changed for LibreOffice 5.2 at ~~/usr/lib64~~ /opt/libreoffice5.2
 * Pointers changed for Poco at /usr/lib64
 
 ## Help!
